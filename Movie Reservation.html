@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Seat Reservation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+            line-height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .available { background-color: #28a745; color: white; }
+        .reserved { background-color: #dc3545; color: white; cursor: not-allowed; }
+        .selected { background-color: #ffc107; color: black; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container text-center mt-5">
+        <h2 class="mb-4">Movie Seat Reservation</h2>
+        <div id="seat-map" class="d-flex flex-wrap justify-content-center"></div>
+        <div class="mt-3">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmationModal">Confirm Selection</button>
+            <button class="btn btn-danger" onclick="resetSelection()">Reset</button>
+        </div>
+        <p class="mt-3" id="status"></p>
+    </div>
+
+    <!-- Bootstrap Modal for Confirmation -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Confirm Your Seats</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="selectedSeatsText">No seats selected.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="confirmSeats()" data-bs-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const rows = 5, cols = 8;
+        const seatMap = document.getElementById('seat-map');
+        
+        for (let i = 0; i < rows * cols; i++) {
+            const seat = document.createElement('div');
+            seat.classList.add('seat', 'available');
+            seat.textContent = i + 1;
+            seat.onclick = () => toggleSeat(seat);
+            seatMap.appendChild(seat);
+        }
+        
+        function toggleSeat(seat) {
+            if (seat.classList.contains('reserved')) return;
+            seat.classList.toggle('selected');
+            updateSelectedSeats();
+        }
+        
+        function updateSelectedSeats() {
+            let selectedSeats = Array.from(document.querySelectorAll('.selected')).map(seat => seat.textContent);
+            document.getElementById('selectedSeatsText').textContent = selectedSeats.length > 0 ? `Selected Seats: ${selectedSeats.join(', ')}` : 'No seats selected.';
+        }
+        
+        function confirmSeats() {
+            document.querySelectorAll('.selected').forEach(seat => {
+                seat.classList.remove('selected', 'available');
+                seat.classList.add('reserved');
+            });
+            document.getElementById('status').textContent = "Seats Reserved Successfully!";
+        }
+        
+        function resetSelection() {
+            document.querySelectorAll('.selected').forEach(seat => seat.classList.remove('selected'));
+            document.getElementById('status').textContent = "";
+            updateSelectedSeats();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
